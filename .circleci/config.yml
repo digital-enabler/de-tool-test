@@ -1,0 +1,158 @@
+version: 2.1
+
+orbs:
+  maven: circleci/maven@1.4.1
+  sonarcloud: sonarsource/sonarcloud@1.1.1
+  aws-ecr: circleci/aws-ecr@8.2.1
+  dive: packituz/dive@0.0.2
+
+defaults: &defaults
+  environment:
+    BASE_BUILD_NUM: "0"
+    AWS_REGION: eu-south-1
+    CI: true
+  docker:
+    - image: cimg/openjdk:20.0.1
+
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - maven/with_cache:
+          verify_dependencies: false
+          steps:
+            - checkout
+            - run: "./mvnw -B install"
+            - maven/process_test_results
+      - store_artifacts:
+          path: "/home/circleci/project/target/app.jar"
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - .
+
+  code-quality:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - sonarcloud/scan:
+          cache_version: 1
+          project_root: .
+
+  docker:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - setup_remote_docker
+      - aws-ecr/ecr-login:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          registry-id: AWS_ECR_REGISTRY_ID
+          region: $AWS_REGION
+      - aws-ecr/build-image:
+          path: docker
+          repo: $CIRCLE_PROJECT_REPONAME
+          tag: latest
+          region: $AWS_REGION
+          push-image: false
+      - run:
+          name: Cache docker image
+          command: docker save ${AWS_ECR_REGISTRY_ID}.dkr.ecr.$AWS_REGION.amazonaws.com/$CIRCLE_PROJECT_REPONAME > image.tar
+      - store_artifacts:
+          path: image.tar
+          destination: docker.tar
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - .
+  docker-verify:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - dive/install:
+          version: 0.11.0
+      - run:
+          name: Verify Docker Image
+          command: dive docker-archive://image.tar --ci-config .dive-ci
+
+  deliver:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - setup_remote_docker
+      - run:
+          name: Import docker image
+          command: docker load < image.tar
+      - aws-ecr/ecr-login:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          registry-id: AWS_ECR_REGISTRY_ID
+          region: $AWS_REGION
+      - run:
+          name: Select docker tag
+          command: |
+            echo 'export TAG="latest"' >> "$BASH_ENV"
+            if [ -n "$CIRCLE_TAG" ]; then
+                echo 'export TAG=$CIRCLE_TAG' >> "$BASH_ENV"
+            fi
+            if [ "$CIRCLE_BRANCH" == "beta" ]; then
+                echo 'export TAG="beta"' >> "$BASH_ENV"
+            fi
+      - run:
+          name: Tag image
+          command: docker tag ${AWS_ECR_REGISTRY_ID}.dkr.ecr.$AWS_REGION.amazonaws.com/$CIRCLE_PROJECT_REPONAME ${AWS_ECR_REGISTRY_ID}.dkr.ecr.$AWS_REGION.amazonaws.com/$CIRCLE_PROJECT_REPONAME:$TAG
+      - aws-ecr/create-repo:
+          region: $AWS_REGION
+          repo-scan-on-push: false
+          repo: $CIRCLE_PROJECT_REPONAME
+      - run:
+          name: Set lifecycle policy
+          command: aws ecr put-lifecycle-policy --repository-name $CIRCLE_PROJECT_REPONAME --lifecycle-policy-text "file://.circleci/policy.json"
+      - aws-ecr/push-image:
+          registry-id: AWS_ECR_REGISTRY_ID
+          repo: $CIRCLE_PROJECT_REPONAME
+          tag: $TAG
+          region: $AWS_REGION
+
+workflows:
+  version: 2
+
+  build-and-deploy:
+    jobs:
+      - build:
+          context: digitalenabler-core
+      - code-quality:
+          context: digitalenabler-core
+          requires: 
+            - build
+          filters:
+            tags:
+              ignore: /.*/
+      - docker:
+          context: digitalenabler-core
+          requires: 
+            - build
+      - docker-verify:
+          context: digitalenabler-core
+          requires:
+            - docker
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              ignore:
+                - main
+      - deliver:
+          context: digitalenabler-core
+          requires:
+            - docker
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+.*/
+            branches:
+              only:
+                - main
