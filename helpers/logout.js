@@ -1,7 +1,7 @@
-const { By, until } = require('selenium-webdriver');
+const { By, until } = require("selenium-webdriver");
 
 async function logoutUser(driver) {
-  const profileMenuSelector = By.css('.v-avatar');
+  const profileMenuSelector = By.css(".v-avatar");
   await driver.wait(until.elementLocated(profileMenuSelector), 10000);
   const profileMenu = await driver.findElement(profileMenuSelector);
   await driver.wait(until.elementIsVisible(profileMenu), 5000);
@@ -19,5 +19,3 @@ async function logoutUser(driver) {
 }
 
 module.exports = logoutUser;
-
-

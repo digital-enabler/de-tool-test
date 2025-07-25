@@ -60,4 +60,4 @@ You will have only to:
 
 * **Antonino Sirchia** - *Initial work* - [sirnino](https://github.com/sirnino)
 
-See also the list of [contributors](contributors) who participated in this project
+See also the list of [contributors](contributors) who participated in this project.
