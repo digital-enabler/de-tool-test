@@ -1,30 +1,30 @@
-const { By, until } = require('selenium-webdriver');
+const { By, until } = require("selenium-webdriver");
 
 class BasePage {
   constructor(driver) {
     this.driver = driver;
-    this.timeout = 10000; // timeout di default
+    this.timeout = 10000; // default timeout
   }
 
-  // Trova un elemento e attendi che sia presente
+  // Find an element and wait for it to be present
   async findElement(locator, timeout = this.timeout) {
     return await this.driver.wait(until.elementLocated(locator), timeout);
   }
 
-  // Trova un elemento e attendi che sia cliccabile
+  // Find an item and wait for it to be clickable
   async findClickableElement(locator, timeout = this.timeout) {
     const element = await this.findElement(locator, timeout);
     return await this.driver.wait(until.elementIsEnabled(element), timeout);
   }
 
-  // Clicca su un elemento
+  // Click on item
   async click(locator) {
     const element = await this.findClickableElement(locator);
     await element.click();
     return element;
   }
 
-  // Inserisci testo in un campo
+  // Insert text into a field
   async type(locator, text) {
     const element = await this.findElement(locator);
     await element.clear();
@@ -32,13 +32,13 @@ class BasePage {
     return element;
   }
 
-  // Ottieni testo da un elemento
+  // Get text from an element
   async getText(locator) {
     const element = await this.findElement(locator);
     return await element.getText();
   }
 
-  // Verifica se un elemento è visibile
+  // Checking whether an element is visible
   async isElementVisible(locator, timeout = this.timeout) {
     try {
       const element = await this.findElement(locator, timeout);

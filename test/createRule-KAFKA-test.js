@@ -4,7 +4,7 @@ const initHomePageSession = require("../helpers/initHomePageSession");
 const RuleCreationPage = require("../pages/rule-creation-pages");
 
 describe("Create Rule Kafka Test", function () {
-  this.timeout(60000); // Timeout generale per l'intero test
+  this.timeout(60000); // General timeout for entire test
   let driver, homePage, creationPage;
 
   before(async function () {
@@ -21,7 +21,7 @@ describe("Create Rule Kafka Test", function () {
   it("should create rule and proceed through all steps", async function () {
     console.log("Inizio test di creazione regola...");
 
-    // 1. Click sul bottone "Create Rule"
+    // 1. Click on "Create Rule" button
     console.log('Cercando il bottone "Create Rule"...');
     const createBtn = await driver.wait(
       until.elementLocated(By.css(".v-btn.v-btn--elevated.text-white")),
@@ -32,7 +32,7 @@ describe("Create Rule Kafka Test", function () {
     await createBtn.click();
     console.log('Cliccato su "Create Rule".');
 
-    // Aspetta che la modale di creazione regola sia visibile e pronta
+    // Wait until the rule creation modal is visible and ready
     console.log('Attendendo che la modale "Crea Nuova Regola" sia visibile...');
     const modalTitleElement = await driver.wait(
       until.elementLocated(By.css(".v-toolbar-title__placeholder")),
@@ -41,73 +41,71 @@ describe("Create Rule Kafka Test", function () {
     await driver.wait(until.elementIsVisible(modalTitleElement), 5000);
     console.log('Modale "Crea Nuova Regola" è visibile e pronta.');
 
-    // 2. Scrivi il nome della nuova regola
+    // 2. Write the name of the new rule
     const newRuleName = "Test Regola Automatica Kafka";
     console.log(`Compilando il nome della regola: ${newRuleName}`);
     await creationPage.fillRuleName(newRuleName);
     console.log("Nome regola compilato.");
 
-    // 3. Seleziona opzione dalla select (questa azione avviene all'interno della stessa modale)
+    // 3. Select option from select (this action occurs within the modal itself)
     console.log("Aprendo la select...");
-    await creationPage.selectMenu("OptionVisibleText"); // Usa il testo reale che ti aspetti
+    await creationPage.selectMenu("OptionVisibleText");
     console.log("Select menu aperta.");
 
     console.log("Cliccando sulla option...");
     await creationPage.clickMenuOptionByText("avant");
     console.log("Option selezionata.");
 
-    // 4. Salva (questo dovrebbe chiudere la prima modale)
     console.log('Cliccando sul bottone "Salva" (prima fase)...');
     await creationPage.clickSave();
 
-    //Attesa per la chiusura della modale e il caricamento della pagina successiva
+    // Waiting for the modal to close and the next page to load
     console.log(
       "Attendendo 3 secondi per la chiusura della modale e il caricamento della pagina successiva..."
     );
     await driver.sleep(3000); // 3 secondi di attesa
 
-    //click sull'asset card
+    // Click on asset card
     console.log("Cliccando sulla card in base al testo...");
     await creationPage.clickCardByText("NGSI ENTITY");
     console.log("Card cliccata.");
 
-    // Attesa per il caricamento dell'asset list
+    // Waiting for asset list to load
     console.log(
       "Attendendo 3 secondi affinchè la lista si carichi correttamente..."
     );
-    await driver.sleep(3000); // 3 secondi di attesa
+    await driver.sleep(3000);
 
-    //click sulla freccia dell'asset list
+    // Click on arrow of asset list
     console.log(
       "Procedendo con il prossimo passo cliccando sul bottone freccia..."
     );
     await creationPage.clickRightArrowButton();
     console.log("Bottone freccia cliccato.");
 
-    // Attesa affinchè l'asset selezionato si veda in lista
+    // Waiting for the selected asset to appear in the list
     console.log(
       "Attendendo 3 secondi affinchè la lista degli asset selezionati si carichi correttamente..."
     );
-    await driver.sleep(3000); // 3 secondi di attesa
+    await driver.sleep(3000);
 
-    //click sul bottone continue
     console.log(
       'Cliccando sul bottone "Continue" per andare al prossimo step...'
     );
-    await creationPage.clickButtonByText("CONTINUE"); // Passa il testo esatto del bottone
+    await creationPage.clickButtonByText("CONTINUE");
     console.log('Bottone "Continue" cliccato.');
 
-    // Attesa affinchè si carichi la pagina delle conditions
+    // Waiting for the conditions page to load
     console.log(
       "Attendendo 3 secondi affinchè si carichi la pagina delle conditions..."
     );
     await driver.sleep(3000);
 
-    // Esempio: Aprire la select nella 3a <td> e selezionare un'opzione
+    // Example: Open the select in the 3rd <td> and select an option
     console.log(
       "Iniziamo a selezionare le opzioni dalle select della tabella, apriamo la select della 3 colonna..."
     );
-    await creationPage.selectMenuInRowByTdIndex(3); // Indice 3 per la terza <td>
+    await creationPage.selectMenuInRowByTdIndex(3); // Index 3 for the third <td>.
     console.log("Select nella 3a TD aperta.");
 
     console.log("Cliccando sulla prima opzione desiderata...");
@@ -138,21 +136,20 @@ describe("Create Rule Kafka Test", function () {
 
     await driver.sleep(2000);
 
-    // Interazione con il Text Field nella 6a Colonna
+    // Interaction with the Text Field in the 6th Column
     console.log(
       "Iniziamo a inserire il valore nel text field della 6a colonna..."
     );
-    // Chiamata al metodo: usa 6 come indice per la sesta <td> e il valore da inserire
+    // Method call: use 6 as index for the sixth <td> and the value to be entered
     await creationPage.fillTextFieldInRowByTdIndex(6, "5");
     console.log("Valore inserito nel text field della 6a TD.");
 
     await driver.sleep(2000);
 
-    //click sul bottone continue
     console.log(
       'Cliccando sul bottone "Continue" per andare al prossimo step...'
     );
-    await creationPage.clickButtonByText("CONTINUE"); // Passa il testo esatto del bottone
+    await creationPage.clickButtonByText("CONTINUE");
     console.log('Bottone "Continue" cliccato.');
 
     await driver.sleep(3000);
@@ -162,50 +159,48 @@ describe("Create Rule Kafka Test", function () {
     );
     await creationPage.kafkaAction({
       host: "localhost",
-      port: 9092, // Nota: verrà convertito a stringa internamente per sendKeys
+      port: 9092, // Note: will be converted to string internally for sendKeys
       topicName: "my-test-topic",
-      value: '{ "key": "value", "data": "Test messaggio Kafka da Selenium" }',
+      value: "Test messaggio Kafka da Selenium",
     });
     console.log('Azione "Kafka" configurata e salvata.');
 
     await driver.sleep(3000);
 
-    // CHIAMIAMO IL NUOVO METODO PER GESTIRE LA MODALE
+    // HAndling modal
     await creationPage.handleConfirmationModal();
     console.log("Modale di conferma gestita con successo.");
 
     await driver.sleep(3000);
 
-    //click sul bottone continue
     console.log(
       'Cliccando sul bottone "Continue" per andare al prossimo step...'
     );
-    await creationPage.clickButtonByText("CONTINUE"); // Passa il testo esatto del bottone
+    await creationPage.clickButtonByText("CONTINUE");
     console.log('Bottone "Continue" cliccato.');
 
     await driver.sleep(3000);
 
-    //click sul bottone continue
     console.log('Cliccando sul bottone "Save" per salvare la regola.');
-    await creationPage.clickButtonByText("SAVE"); // Passa il testo esatto del bottone
+    await creationPage.clickButtonByText("SAVE");
     console.log('Bottone "Save" cliccato.');
 
     await driver.sleep(6000);
 
-    // FASE 4: Verifica della creazione della regola
+    // Verification of Rule Creation
 
     console.log(
       `Cercando la regola "${newRuleName}" per verificare la sua presenza.`
     );
 
-    // Chiamata al metodo di ricerca
+    // Calling the search method
     await homePage.searchFor(newRuleName);
-    await driver.sleep(2000); // Piccola pausa per la visualizzazione
+    await driver.sleep(2000);
 
-    // Ottenere i risultati della ricerca
+    // Obtaining search results
     const results = await homePage.getSearchResultsText();
 
-    // Assert: verifica che almeno un risultato contenga il nome della regola
+    // Checks that at least one result contains the name of the rule
     const found = results.some((text) =>
       text.toLowerCase().includes(newRuleName.toLowerCase())
     );

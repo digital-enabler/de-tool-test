@@ -1,68 +1,74 @@
-const { By } = require('selenium-webdriver');
-const BasePage = require('./base-page');
+const { By } = require("selenium-webdriver");
+const BasePage = require("./base-page");
 
 class LoginPage extends BasePage {
   constructor(driver) {
     super(driver);
-    
-    // Locatori per gli elementi della pagina
-    this.usernameInput = By.name('username'); 
-    this.passwordInput = By.name('password'); 
+
+    // Locators for page elements
+    this.usernameInput = By.name("username");
+    this.passwordInput = By.name("password");
     this.signInButton = By.id("kc-login");
-    this.errorMessage = By.css('.pf-c-form__helper-text.pf-m-error.required.kc-feedback-text');
-    this.loadingSpinner = By.id('loading');
+    this.errorMessage = By.css(
+      ".pf-c-form__helper-text.pf-m-error.required.kc-feedback-text"
+    );
+    this.loadingSpinner = By.id("loading");
   }
 
-  // Naviga alla pagina di login
+  // Navigate to login page
   async open(url) {
     await this.driver.get(url);
     return this;
   }
 
-  // Inserisci username
+  // Enter username
   async enterUsername(username) {
+    console.log("Valore di username prima di sendKeys:", username);
     await this.type(this.usernameInput, username);
     console.log(`Username inserito: ${username}`);
   }
 
-  // Inserisci password
+  // Enter password
   async enterPassword(password) {
     await this.type(this.passwordInput, password);
-    console.log('Password inserita');
+    console.log("Password inserita");
   }
 
-  // Clicca sul bottone Sign In
+  // Click on Sign In button
   async clickSignIn() {
     await this.click(this.signInButton);
-    console.log('Bottone Sign In cliccato');
+    console.log("Bottone Sign In cliccato");
   }
 
-  // Esegui login completo
+  // Complete login
   async login(username, password) {
-    console.log('Iniziando processo di login...');
+    console.log("Iniziando processo di login...");
     await this.enterUsername(username);
     await this.enterPassword(password);
     await this.clickSignIn();
-    
-    // Aspetta che il loading scompaia (se presente)
+
+    // Wait for loading to disappear (if present)
     try {
       await this.driver.wait(async () => {
-        const isLoading = await this.isElementVisible(this.loadingSpinner, 1000);
+        const isLoading = await this.isElementVisible(
+          this.loadingSpinner,
+          1000
+        );
         return !isLoading;
       }, 10000);
     } catch (e) {
-      // Loading spinner non presente, continua
+      // Loading spinner not present, continue
     }
-    
-    console.log('Login completato');
+
+    console.log("Login completato");
   }
 
-  // Verifica se c'è un messaggio di errore
+  // Check for an error message
   async hasErrorMessage() {
     return await this.isElementVisible(this.errorMessage, 3000);
   }
 
-  // Ottieni il messaggio di errore
+  // Get error message
   async getErrorMessage() {
     if (await this.hasErrorMessage()) {
       return await this.getText(this.errorMessage);
@@ -70,30 +76,13 @@ class LoginPage extends BasePage {
     return null;
   }
 
-
-  // Verifica se la pagina di login è caricata
+  // Check whether the login page is loaded
   async isLoaded() {
     const usernameVisible = await this.isElementVisible(this.usernameInput);
     const passwordVisible = await this.isElementVisible(this.passwordInput);
     const buttonVisible = await this.isElementVisible(this.signInButton);
-    
+
     return usernameVisible && passwordVisible && buttonVisible;
-  }
-
-  // Ottieni il testo del bottone
-  async getSignInButtonText() {
-    return await this.getText(this.signInButton);
-  }
-
-  // Verifica se i campi sono vuoti
-  async areFieldsEmpty() {
-    const usernameElement = await this.findElement(this.usernameInput);
-    const passwordElement = await this.findElement(this.passwordInput);
-    
-    const usernameValue = await usernameElement.getAttribute('value');
-    const passwordValue = await passwordElement.getAttribute('value');
-    
-    return usernameValue === '' && passwordValue === '';
   }
 }
 

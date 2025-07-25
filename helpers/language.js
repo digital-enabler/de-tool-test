@@ -1,8 +1,8 @@
-const { By, until } = require('selenium-webdriver');
+const { By, until } = require("selenium-webdriver");
 
-//essendo una funzione sempre accessibile la definisco una volta sola e funziona in qualsiasi pagina l'utente si trovi
+//since it is a function that is always accessible, I define it once and it works on whichever page the user is on
 async function changeLanguage(driver, languageText) {
-  const profileMenuSelector = By.css('.v-avatar');
+  const profileMenuSelector = By.css(".v-avatar");
   await driver.wait(until.elementLocated(profileMenuSelector), 10000);
   const profileMenu = await driver.findElement(profileMenuSelector);
   await driver.wait(until.elementIsVisible(profileMenu), 5000);

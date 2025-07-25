@@ -1,8 +1,8 @@
-const { loginWithValidCredentials } = require('../helpers/auth');
-const logoutUser = require('../helpers/logout');
-const { expect } = require('chai');
+const { loginWithValidCredentials } = require("../helpers/auth");
+const logoutUser = require("../helpers/logout");
+const { expect } = require("chai");
 
-describe('Logout Test', function () {
+describe("Logout Test", function () {
   this.timeout(30000);
   let driver;
 
@@ -11,11 +11,13 @@ describe('Logout Test', function () {
     driver = session.driver;
   });
 
-  //prendiamo l'url e verifichiamo che l'url non ha più /rules
-  it('should log out and return to login page', async function () {
+  // we take the url and verify that the url no longer has /rules
+  it("should log out and return to login page", async function () {
     await logoutUser(driver);
     const url = await driver.getCurrentUrl();
-    expect(url).to.not.equal('https://rules.avant.digital-enabler.eng.it/rules'); 
+    expect(url).to.not.equal(
+      "https://rules.avant.digital-enabler.eng.it/rules"
+    );
   });
 
   after(async function () {
