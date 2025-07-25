@@ -1,0 +1,21 @@
+{
+  "name": "selenium-test-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./test/first-test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "geckodriver": "^5.0.0",
+    "selenium-webdriver": "^4.33.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "chromedriver": "^138.0.3",
+    "mocha": "^11.5.0"
+  }
+}
