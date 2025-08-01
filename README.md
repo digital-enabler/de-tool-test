@@ -1,63 +1,36 @@
-# Digital Enabler Project template
-
-![REPO-TYPE](https://img.shields.io/badge/repo--type-template-blue?style=for-the-badge&logo=github)
-
-This repository is a **template** intended to be used to create new repositories belonging to the [Digital Enabler](https://digitalenabler.eng.it) ecosystem platform.
+# Automatic Test Rule Manager
 
 ## Getting Started
 
-This repo has the following structure:
+Set username and password in `/.env.template` and then delete .template extension.
 
-```
-+--- .circleci
-|     +--- config.yml
-|     +--- policy.json
-+--- .editorconfig
-+--- .gitignore
-+--- CONTRIBUTING.md
-+--- docker
-|     +--- docker-compose.yml
-|     +--- Dockerfile
-+--- README.md
-+--- src
+`.env` file communicates with `/utils/constants.js` file. This file communicates with `/helpers/auth.js` where there is the function that is used in `/helpers/initHomePageSession.js` that is called in every test to log into the page.
+
+## Execution of test file
+
+### Single test file
+
+Launch
+
+```bash
+npx mocha test/FileName
 ```
 
-The **READMETEMPLATE** is a template for writing the README of the application. It contains several section that the developer should fill-in and populate accordingly to the project specific characteristics.
+in console.
+The result is visible in console.
 
-The **README** is this file and, once the new project is created, it must be replaced with the actual README of your application (written starting from the upmentioned READMETEMPLATE).
+### All test file simultaneously
 
-The **CONTRIBUTING** is a file describing the contribution guideline athat all the contributors to the DigitalEnabler project must adhere.
+Launch
 
-The **.gitignore** is a default gitignore that covers the 90% of the standard IDE and languages. Of course, once the new project is created, it can be changed accordingly to the project specific needs.
+```bash
+.\report\generate-report.bat
+```
 
-The **.editorconfig** is the file that contains all the code base style guidelines (indentation depth, parentesis positioning, etc..) the code bases must adhere to. It is, for now, more focused on JAVA language.
-
-The **src** folder is intended for the actual source-code of the application you will write. In this template it's (obviously) empty.
-
-The **docker** folder contains empty *Dockerfile* and an empty *docker-compose.yml* file. They must be fulfilled accordingly to project specific characteristics.
-The Dockerfile will be used for automatically building the distributable docker image. The docker-compose is, instead, intended only for local development purposes.
-
-The **.circleci** folder contains three files:
-- config.yaml
-- settings.xml
-- sonar.sh
-
-Normally the devops developer has only to change the config.yaml accordingly to the **CirceCI** pipeline he wants to implement.
-
-### Usage
-
-To use this template you have only to click on the **Use this template** green button.
-
-You will have only to:
-
-- Choose the *Repository name* you prefer
-- Optionally write a small description
-- Choose if the new repository will be public or private
-
-**Important note:** Remember to **NOT** include all branches.
+in console.
+This command generate "customReport.html" report file in "report" folder.
+It's possible to see the summary with default template of mochawesome there.
 
 ## Authors
 
-* **Antonino Sirchia** - *Initial work* - [sirnino](https://github.com/sirnino)
-
-See also the list of [contributors](contributors) who participated in this project.
+-   **Nicolò Romano** - _Initial work_ - [nicromano00](https://github.com/nicromano00)
