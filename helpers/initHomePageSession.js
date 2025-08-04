@@ -1,14 +1,13 @@
 const { loginWithValidCredentials } = require("./auth");
 const { By, until } = require("selenium-webdriver");
 const HomePage = require("../pages/home-page");
+const { LOGIN_URL } = require("../utils/constants");
 
 async function initHomePageSession() {
     const session = await loginWithValidCredentials();
     const driver = session.driver;
 
-    await driver.get(
-        "https://idm.digital-enabler.eng.it/auth/realms/avant/protocol/openid-connect/auth?response_type=code&client_id=rule-app&redirect_uri=https://rm-middleware-api.core.digital-enabler.eng.it/api/v1/avant/auth/callback"
-    );
+    await driver.get(LOGIN_URL);
 
     await driver.executeScript(`localStorage.setItem('lang', 'en');`);
     await driver.navigate().refresh();

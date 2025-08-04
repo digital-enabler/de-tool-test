@@ -5,7 +5,7 @@ require("chromedriver");
 // Function to configure and return the driver
 async function setupdriver() {
     // Browser Configurations
-    const options = new chrome.Options(); // Options con la O maiuscola!
+    const options = new chrome.Options();
 
     options.addArguments("--ignore-certificate-errors");
 

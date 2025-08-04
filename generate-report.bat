@@ -1,17 +1,17 @@
 @echo off
-echo Controllo/esistenza cartella report...
+echo Control/existence of report folder...
 if not exist report (
   mkdir report
-  echo Cartella 'report' creata.
+  echo 'report' folder created.
 ) else (
-  echo Cartella 'report' già esistente.
+  echo Already existing “report” folder.
 )
 
 echo.
-echo Esecuzione dei test Mocha con reporter Mochawesome...
-rem Il reporter di Mochawesome genera direttamente il file HTML e il JSON
+echo Performing Mocha tests with Mochawesome reporter...
+rem The Mochawesome reporter directly generates the HTML file and the JSON
 npx mocha test/**/*.js --reporter mochawesome --reporter-options "reportDir=report,reportFilename=customReport" --timeout 240000
 
 echo.
-echo Report generato con successo: report\customReport.html
+echo Report successfully generated: report\customReport.html
 pause
